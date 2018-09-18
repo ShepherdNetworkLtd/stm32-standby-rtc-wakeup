@@ -60,7 +60,7 @@ void standby(int seconds) {
     HAL_PWR_EnterSTANDBYMode();
 
     // this should not happen...
-    rtc_deactivate_wake_up_timer();
+    //rtc_deactivate_wake_up_timer();
     core_util_critical_section_exit();
 
     debug("Continued after getting out of STANDBY mode - this should not happen\n");

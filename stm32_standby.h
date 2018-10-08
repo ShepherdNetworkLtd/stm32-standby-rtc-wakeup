@@ -15,6 +15,9 @@ static RTC_HandleTypeDef RtcHandle;
 
 static void rtc_set_wake_up_timer_s(uint32_t delta)
 {
+    //disable the wakeup timer - required to change the timer:
+    HAL_RTCEx_DeactivateWakeUpTimer(&RtcHandle);
+
     uint32_t clock = RTC_WAKEUPCLOCK_CK_SPRE_16BITS;
 
     // HAL_RTCEx_SetWakeUpTimer_IT will assert that delta is 0xFFFF at max

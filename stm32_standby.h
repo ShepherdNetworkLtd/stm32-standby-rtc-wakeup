@@ -25,7 +25,9 @@ static void rtc_set_wake_up_timer_s(uint32_t delta)
 
     RtcHandle.Instance = RTC;
 
+    HAL_PWR_EnableBkUpAccess(); // must be present to allow setting the timer
     HAL_StatusTypeDef status = HAL_RTCEx_SetWakeUpTimer_IT(&RtcHandle, delta, clock);
+    HAL_PWR_DisableBkUpAccess();
 
     if (status != HAL_OK) {
         debug("Set wake up timer failed: %d\n", status);
@@ -49,14 +51,14 @@ void standby(int seconds) {
     core_util_critical_section_enter();
 
     // Clear wakeup flag, just in case.
+    HAL_PWR_EnableBkUpAccess();
     SET_BIT(PWR->CR, PWR_CR_CWUF);
-
-    // Enable wakeup timer.
-    rtc_set_wake_up_timer_s(seconds);
+    HAL_PWR_DisableBkUpAccess();
 
     // Enable debug interface working in standby. Causes power consumption to increase drastically while in standby.
     //HAL_DBGMCU_EnableDBGStandbyMode();
 
+    EXTI->IMR=0x100000; //only wake on TIMER.
     HAL_PWR_EnterSTANDBYMode();
 
     // this should not happen...
